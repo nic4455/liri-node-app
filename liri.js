@@ -42,8 +42,7 @@ function concert() {
         .then(function (something) {
 
             for (i = 0; i < 5; i++) {
-                c
-                onsole.log("Venue name: ", something.data[i].venue.name);  
+                console.log("Venue name: ", something.data[i].venue.name);  
                 console.log("City: ", something.data[i].venue.city); 
                 console.log("Date: ", something.data[i].datetime); 
             }
