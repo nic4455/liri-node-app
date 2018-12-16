@@ -7,7 +7,7 @@ var moment = require('moment');
 let fs = require('fs');
 
 let commands = process.argv[2];
-let cliArgument = process.argv[3];
+let cliArgument = process.argv.slice(3).join(" ");
 
 
 
@@ -24,8 +24,13 @@ if (commands === "concert-this") {
 };
 
 function omdb() {
+    if (!cliArgument) {
+        cliArgument = 'mr nobody';
+    }; 
     axios.get("https://www.omdbapi.com/?t=" + cliArgument + "&y=&plot=short&apikey=trilogy")
         .then(function (something) {
+            
+            console.log("~~~~~~~~~~~~~ "+cliArgument.toUpperCase()+" Info ~~~~~~~~~~~~~")
             console.log("Movie title:  ", something.data.Title);
             console.log("Year released:  ", something.data.Year);
             console.log("IMDB Rating: ", something.data.imdbRating);
@@ -40,11 +45,19 @@ function omdb() {
 function concert() {
     axios.get("https://rest.bandsintown.com/artists/" + cliArgument + "/events?app_id=codingbootcamp")
         .then(function (something) {
-
-            for (i = 0; i < 5; i++) {
-                console.log("Venue name: ", something.data[i].venue.name);  
-                console.log("City: ", something.data[i].venue.city); 
-                console.log("Date: ", something.data[i].datetime); 
+            console.log("Number of upcoming events: "+something.data.length)
+            for (var i = 0; i <= (something.data.length - 1); i++) {
+                console.log("~~~~~~~~~~~~~ "+cliArgument+" Concert Info ~~~~~~~~~~~~~")
+                if (something.data[i].venue.name  === "undefined") {
+                    console.log("No venue for this event yet")
+                } else {
+                    console.log("Venue name: ", something.data[i].venue.name);  
+                }
+                
+                console.log("City: ", something.data[i].venue.city+", "+something.data[i].venue.country); 
+                console.log("Date: ", moment(something.data[i].datetime).format("MM/DD/YYYY")); 
+                // console.log(something.data[i].venue)
+                
             }
 
         })
@@ -54,18 +67,20 @@ function concert() {
 function spotifyFunc(cliArgument) {
 
     if (!cliArgument) {
-        cliArgument = 'The Sign';
+        cliArgument = 'the sign ace';
     };
 
     spotify.search({ type: 'track', query: cliArgument, limit: 5}, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
         };
-
-        console.log("Artist(s): " + data.tracks.items[0].artists[0].name);
-        console.log("Song Name: " + data.tracks.items[0].name);
-        console.log("Preview Link: " + data.tracks.items[0].preview_url);
-        console.log("Album: " + data.tracks.items[0].album.name);
+            for (i = 0; i < 5; i++) {
+            console.log("~~~~~~~~~~~~~ "+cliArgument+" Concert Info ~~~~~~~~~~~~~")
+            console.log("Artist(s): " + data.tracks.items[i].artists[0].name);
+            console.log("Song Name: " + data.tracks.items[i].name);
+            console.log("Preview Link: " + data.tracks.items[i].preview_url);
+            console.log("Album: " + data.tracks.items[i].album.name);
+            }
     });
 };
 
